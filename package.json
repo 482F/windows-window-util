@@ -5,5 +5,10 @@
   "repository": "https://github.com/482F/windows-window-util.git",
   "author": "482F",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "ffi-napi": "^4.0.3",
+    "ref-napi": "^3.0.3",
+    "ref-wchar-napi": "^1.0.3"
+  }
 }
