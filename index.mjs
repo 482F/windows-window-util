@@ -73,6 +73,10 @@ const getW = async (func, splitZeros = false) => {
 
 const wwutil = {}
 
+/**
+ * 全てのウィンドウの hwnd を取得する
+ * @return {Array<Number>}
+ */
 wwutil.getAllWindowHwnds = async () => {
   const hwnds = []
 
@@ -84,24 +88,50 @@ wwutil.getAllWindowHwnds = async () => {
   return hwnds
 }
 
+/**
+ * アクティブなウィンドウの hwnd を取得する
+ * @return {Number}
+ */
 wwutil.getActiveWindowHwnd = async () => {
   return await user32.GetForegroundWindow()
 }
 
+/**
+ * 指定された hwnd のウィンドウが可視かどうかを取得する
+ * @return {Boolean}
+ */
 wwutil.getIsVisibleByHwnd = async (hwnd) => {
   return await user32.IsWindowVisible(hwnd)
 }
 
+/**
+ * 指定された hwnd のウィンドウのタイトルを取得する
+ * @param {Number} hwnd
+ * @return {String}
+ */
 wwutil.getTitleByHwnd = async (hwnd) => {
   return await getW((buf, len) => user32.GetWindowTextW(hwnd, buf, len))
 }
 
+/**
+ * 指定された hwnd のウィンドウのプロセス ID を取得する
+ * @param {Number} hwnd
+ * @return {Number}
+ */
 wwutil.getPidByHwnd = async (hwnd) => {
   const pid = ref.alloc(lpdwordPtr)
   await user32.GetWindowThreadProcessId(hwnd, pid)
   return pid.readInt32LE(0)
 }
 
+/**
+ * 渡されたウィンドウのフィールドのうち fields に含まれるものについて情報を取得して値を埋め込む
+ * @param {Window} window - 対象のウィンドウ
+ * @param {Array<String>} fields - 情報を取得する対象のフィールド名を要素にもつ配列 (ex. `['title', 'pid', 'path']`)
+ * @param {Object} driveMap - ドライブレターがキー、デバイス名が値のオブジェクト。複数回このメソッドを呼ぶときに外側で driveMap を作って渡すとドライブについての情報を重複して取得せずに済む
+ * @param {Object} processMap - プロセスID がキー、プロセスの実行ファイルパスが価のオブジェクト。driveMap と用途は同様
+ * @return {undefined} 引数の window に値を入れるだけなので返り値は無し
+ */
 wwutil.fillWindowFields = async (
   window,
   fields,
@@ -134,6 +164,14 @@ wwutil.fillWindowFields = async (
   }
 }
 
+/**
+ * 指定された hwnd のウィンドウに関する情報を取得する
+ * @param {Number} hwnd - 取得したいウィンドウの hwnd
+ * @param {Array<String>} requireFields - fillWindowFields の fields と同様
+ * @param {Object} driveMap - fillWindowFields と同様
+ * @param {Object} processMap - fillWindowFields と同様
+ * @return {Window}
+ */
 wwutil.getWindowByHwnd = async (
   hwnd,
   requireFields = undefined,
@@ -145,6 +183,13 @@ wwutil.getWindowByHwnd = async (
   return window
 }
 
+/**
+ * アクティブなウィンドウに関する情報を取得する
+ * @param {Array<String>} requireFields - fillWindowFields の fields と同様
+ * @param {Object} driveMap - fillWindowFields と同様
+ * @param {Object} processMap - fillWindowFields と同様
+ * @return {Window}
+ */
 wwutil.getActiveWindow = async (
   requireFields = undefined,
   driveMap = undefined,
@@ -158,6 +203,12 @@ wwutil.getActiveWindow = async (
   )
 }
 
+/**
+ * 全てのウィンドウに関する情報を配列で取得する
+ * @param {Boolean} all - true の場合は全てのウィンドウを、false の場合は可視かつタイトルが存在するウィンドウのみを取得する
+ * @param {Array<String>} requireFields - fillWindowFields の fields と同様
+ * @return {Array<Window>}
+ */
 wwutil.getAllWindows = async (all = false, requireFields) => {
   const firstFields = (() => {
     if (all) {
@@ -187,6 +238,10 @@ wwutil.getAllWindows = async (all = false, requireFields) => {
   return filteredWindows
 }
 
+/**
+ * ドライブレターをキー、デバイス名を値とするオブジェクトを取得する
+ * @return {Object}
+ */
 wwutil.getDriveMap = async () => {
   const driveLetters = await getW(
     (buf, len) => kernel32.GetLogicalDriveStringsW(len, buf),
@@ -204,6 +259,13 @@ wwutil.getDriveMap = async () => {
   ).then((result) => Object.fromEntries(result))
 }
 
+/**
+ * 指定したプロセス ID の実行ファイルのパスを取得する
+ * @param {Number} pid - 対象のプロセス ID
+ * @param {Object} driveMap - fillWindowFields と同様
+ * @param {Object} processMap - fillWindowFields と同様
+ * @return {String}
+ */
 wwutil.getPathByPid = async (pid, driveMap = undefined, processMap = {}) => {
   processMap[pid] ??= (async () => {
     driveMap ??= await wwutil.getDriveMap()
