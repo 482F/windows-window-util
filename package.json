@@ -2,6 +2,12 @@
   "name": "windows-window-util",
   "version": "1.0.0",
   "main": "index.mjs",
+  "exports": {
+    "import": "./index.mjs",
+    "require": "./index.cjs",
+    "node": "./index.mjs",
+    "default": "./index.mjs"
+  },
   "repository": "https://github.com/482F/windows-window-util.git",
   "author": "482F",
   "license": "MIT",
