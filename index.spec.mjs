@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import wwutil, { Window } from './index.mjs'
+import wwutil from './index.mjs'
+const Window = wwutil.Window
 
 describe('wwutil', () => {
   it('getAllWindowHwnds', async () => {
