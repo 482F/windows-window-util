@@ -1,0 +1,9 @@
+{
+  "name": "windows-window-util",
+  "version": "1.0.0",
+  "main": "index.mjs",
+  "repository": "https://github.com/482F/windows-window-util.git",
+  "author": "482F",
+  "license": "MIT",
+  "private": false
+}
