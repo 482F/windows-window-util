@@ -72,6 +72,10 @@ describe('wwutil', () => {
     const allWindows = await wwutil.getAllWindows(true, [])
     const partWindows = await wwutil.getAllWindows(false, [])
     expect(partWindows.length).toBeLessThanOrEqual(allWindows.length)
+    for (let i = 0; i < 10; i++) {
+      // ウィンドウのタイトルに長すぎるものがあると二度目の getTitleByHwnd で落ちる
+      await wwutil.getAllWindows(false, [])
+    }
   })
   it('getDriveMap', async () => {
     const driveMap = await wwutil.getDriveMap()

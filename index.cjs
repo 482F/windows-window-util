@@ -42,9 +42,9 @@ class Window {
 
 const strArg = (string) => Buffer.from(string + '\0', 'ucs2')
 
-const getW = async (func, splitZeros = false) => {
-  let len = 256
+const getW = async (func, splitZeros = false, len = 256) => {
   while (true) {
+    // TODO: len が足りない時に catch へ行かず落ちることがある。要修正
     try {
       const buf = Buffer.alloc(len)
       await func(buf, len)
@@ -110,7 +110,11 @@ wwutil.getIsVisibleByHwnd = async (hwnd) => {
  * @return {String}
  */
 wwutil.getTitleByHwnd = async (hwnd) => {
-  return await getW((buf, len) => user32.GetWindowTextW(hwnd, buf, len))
+  return await getW(
+    (buf, len) => user32.GetWindowTextW(hwnd, buf, len),
+    false,
+    25565
+  )
 }
 
 /**
