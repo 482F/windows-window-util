@@ -10,5 +10,8 @@
     "ffi-napi": "^4.0.3",
     "ref-napi": "^3.0.3",
     "ref-wchar-napi": "^1.0.3"
+  },
+  "devDependencies": {
+    "vitest": "^0.22.1"
   }
 }
